@@ -14,7 +14,6 @@ import numpy as np
 from utils import (
     overlay_ann,
     overlay_mask,
-    show
 )
 
 seed = 1234
@@ -35,7 +34,7 @@ CATEGORIES2LABELS = {
     5: "figure"
 }
 SAVE_PATH = "output/"
-MODEL_PATH = "model_196000.pth"
+MODEL_PATH = "model.pth"
 def get_instance_segmentation_model(num_classes):
     model = torchvision.models.detection.maskrcnn_resnet50_fpn(pretrained=True)
     in_features = model.roi_heads.box_predictor.cls_score.in_features
@@ -115,7 +114,6 @@ def main(argv):
         prediction = model([image.cuda()])
 
     image = torch.squeeze(image, 0).permute(1, 2, 0).mul(255).numpy().astype(np.uint8)
-
     for pred in prediction:
         for idx, mask in enumerate(pred['masks']):
             if pred['scores'][idx].item() < 0.7:
@@ -124,9 +122,17 @@ def main(argv):
             m = mask[0].mul(255).byte().cpu().numpy()
             box = list(map(int, pred["boxes"][idx].tolist()))
             label = CATEGORIES2LABELS[pred["labels"][idx].item()]
+            if label == "figure":
+                box = pred["boxes"][idx].tolist()  # Get the bounding box
+                box = [int(b) for b in box]  # Convert to integer
+                cropped_image = image[box[1]:box[3], box[0]:box[2]]  # Crop the region
+
+                # Save the cropped image
+                output_filename = os.path.join(args.output_path, f"{os.path.basename(args.image_path)}_figure_{idx}.jpg")
+                cv2.imwrite(output_filename, cropped_image)
 
             score = pred["scores"][idx].item()
-
+            # print(score)
             # image = overlay_mask(image, m)
             image = overlay_ann(image, m, box, label, score)
 
@@ -136,9 +142,6 @@ def main(argv):
     else:
         os.mkdir(args.output_path)
         cv2.imwrite(args.output_path+'/{}'.format(os.path.basename(image_path)), image)
-
-    show(image)
-
 
 if __name__ == "__main__":
     import sys

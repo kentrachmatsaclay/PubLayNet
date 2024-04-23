@@ -1,17 +1,5 @@
 import cv2
-import numpy as np
-
-def show(img, name="disp", width=1000):
-    """
-    name: name of window, should be name of img
-    img: source of img, should in type ndarray
-    """
-    cv2.namedWindow(name, cv2.WINDOW_GUI_EXPANDED)
-    cv2.resizeWindow(name, width, 1000)
-    cv2.imshow(name, img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
+import numpy as np 
 
 def overlay_mask(image, mask, alpha=0.5):
     c = (np.random.random((1, 3)) * 153 + 102).tolist()[0]
@@ -23,12 +11,11 @@ def overlay_mask(image, mask, alpha=0.5):
     overlay = image.copy()
     overlay = np.minimum(overlay, inv_mask) 
 
-    color_mask = (mask.astype(np.bool) * c).astype(np.uint8)
+    color_mask = (mask.astype(np.bool_) * c).astype(np.uint8)
     overlay = np.maximum(overlay, color_mask).astype(np.uint8) 
 
     image = cv2.addWeighted(image, alpha, overlay, 1 - alpha, 0)
     return image
-
 
 def overlay_ann(image, mask, box, label, score, alpha=0.5):
     c = np.random.random((1, 3))
@@ -42,7 +29,7 @@ def overlay_ann(image, mask, box, label, score, alpha=0.5):
     overlay = image.copy()
     overlay = np.minimum(overlay, inv_mask) 
 
-    color_mask = (mask.astype(np.bool) * mask_color).astype(np.uint8)
+    color_mask = (mask.astype(np.bool_) * mask_color).astype(np.uint8)
         
     overlay = np.maximum(overlay, color_mask).astype(np.uint8) 
 
