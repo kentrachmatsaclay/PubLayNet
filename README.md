@@ -1,5 +1,13 @@
 # PubLayNet
 
+# Note from Kent
+
+- run `pip install -r requirements.txt`
+- open `experiments.ipynb`
+- Download the model weights below (MaskRCNN-Resnet50-FPN) and put it in the root folder
+
+I already modified the code so it can download the figures
+## Introduction
 PubLayNet is a large dataset of document images, of which the layout is annotated with both bounding boxes and polygonal segmentations. For more information, see [PubLayNet original](https://github.com/ibm-aur-nlp/PubLayNet)
 
 
